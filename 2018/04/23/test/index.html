@@ -1,48 +1,82 @@
-extends base
-
-block title
-  title= page.title + ' | ' + config.title
-
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if theme.changyan
-      a.ds-thread-count(href=url_for(page.path) + '#SOHUCS')
-        span#changyan_count_unit(style='font-size: 15px; color: #6E7173;') 0
-        span= ' ' + __('Comment')
-      script(src='https://assets.changyan.sohu.com/upload/plugins/plugins.count.js', async)
-    if theme.valine.enable
-      a.disqus-comment-count( href=url_for(page.path) + '#vcomment')
-        span.valine-comment-count(data-xid=url_for(page.path))
-        span= ' ' + __('Comment')
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content, {list_number: theme.toc_number})
-    .post-content
-      != page.content
-    if theme.donate.enable == true
-      iframe(src='/donate/?AliPayQR=' + theme.donate.alipay_qr + '&WeChatQR=' + theme.donate.wechat_qr + '&GitHub=' + theme.donate.github + '&BTCQR=' + theme.donate.btc_qr + '&BTCKEY='+ theme.donate.btc_key + '&PayPal=' + theme.donate.paypal_url, style='overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;', frameborder='0', scrolling='no')
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url=page.permalink, data-id=page._id, data-qrcode=qrcode(page.permalink))= __('shareto')
-
-    include _partial/tag.pug
-    include _partial/post_nav.pug
-
-    if page.comments
-      include _partial/comments.pug
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="test"><title>test | Xxxz's blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">test</h1><a id="logo" href="/.">Xxxz's blog</a><p class="description">test</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Start</i></a><a href="/archives/"><i class="fa fa-archive"> Archiv</i></a><a href="/about/"><i class="fa fa-user"> Über</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">test</h1><div class="post-meta">Apr 23, 2018</div><div class="post-content"><h2 id="建站相关"><a href="#建站相关" class="headerlink" title="建站相关"></a>建站相关</h2><p>如果不以文字总结和记录，很多东西都无法深入理解，且容易遗忘，所以考虑开始写博客。</p>
+<p>想搭个人博客，在网上搜了一圈，了解了两种主流的方式：Github Page 和 Wordpress</p>
+<p>在搭建之前首先需要准备两个东西：</p>
+<ol>
+<li>域名：这样才能通过域名访问，可以通过阿里云、腾讯云购买等，需要备案，也可以买不需要备案的域名</li>
+<li>空间：用来存放网页<ul>
+<li>云服务器、VPS等等区别是啥？</li>
+</ul>
+</li>
+</ol>
+<h3 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h3><blockquote>
+<p>WordPress is open source software you can use to create a beautiful website, blog, or app.</p>
+</blockquote>
+<ul>
+<li>大约30%的网站使用wordpress</li>
+<li>使用wordpress建站的步骤：<ol>
+<li>购买VPS</li>
+<li>配置LAMP or LEMP</li>
+<li>部署WordPress<ul>
+<li>创建WordPress操作的用户和数据库</li>
+<li>windows下解压到htdocs文件夹，Linux下需要配置好nginx和wp-config文件，浏览器访问安装页面：选择语言-&gt;设置标题与管理员用户名与密码以及电子邮件-&gt;安装完成</li>
+</ul>
+</li>
+<li>访问网站或进入后台管理界面</li>
+<li>主题安装：<ul>
+<li>将theme资源解压到wp-content/themes目录，并赋予权限</li>
+<li>进入后台管理界面更换主题（也可直接在管理界面下载安装）</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="Github-Page"><a href="#Github-Page" class="headerlink" title="Github Page"></a>Github Page</h3><ul>
+<li>Github为我们<strong>即提供了域名，又提供了空间</strong>，非常方便。</li>
+<li>使用Github Page搭建博客的步骤：<ol>
+<li>新建repository，需要按Github个人网站的规则命名：YOUR-GITHUB-USERNAME.github.io</li>
+<li>Settings -&gt; Launch automatic page generator -&gt; Continue to layouts</li>
+<li>publish page，即可通过域名访问</li>
+<li>index.html</li>
+<li>域名</li>
+</ol>
+</li>
+</ul>
+<h3 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h3><p><a href="https://hexo.io/zh-cn/docs/index.html" target="_blank" rel="noopener">Hexo中文文档</a></p>
+<blockquote>
+<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 <a href="http://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a>（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
+</blockquote>
+<ul>
+<li>Hexo是一个开源的静态博客生成器，由 tommy351 使用 node.js 开发</li>
+</ul>
+<ul>
+<li>Hexo使用步骤：<ol>
+<li>安装 nodejs 和 git</li>
+<li>使用 npm 命令安装 hexo</li>
+<li>指令：<ul>
+<li>init 在当前文件夹下新建网站</li>
+<li>new 新建一篇文章</li>
+<li>generate 生成静态文件</li>
+<li>publish 发表草稿</li>
+<li>server 启动服务器</li>
+<li>deploy 部署网站</li>
+</ul>
+</li>
+<li>主题：<ul>
+<li>主题资源放到themes文件夹下</li>
+<li>在hexo目录下安装相关的 node_moduels</li>
+<li>修改 _config.yml 中的主题配置</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>通过Hexo部署到github pages：<ol>
+<li>配置SSH</li>
+<li>修改 _config.yml 配置文件</li>
+<li>hexo d -g</li>
+</ol>
+</li>
+</ul>
+<h3 id="BootStrap"><a href="#BootStrap" class="headerlink" title="BootStrap"></a>BootStrap</h3><p>首先我觉得大多用bs的都不是全职前端开发，而是兼职前端的后端开发或设计师。</p>
+<p>其次用不用bs其实看项目的性质。<br>如果说项目to b的，且规模不大，没有设计师，没太高性能要求，没有样式非要怎样才行，那用bs主要是为了省时间。后端工程师不用花精力学习浏览器兼容，细节样式等。</p>
+<p>bs 只能说一个jquery 的样式库，还并不能说是框架。现在前端都是组件化开发，react、vue、angular都有对应自己风格的组件库，简单方便，契合自己所使用的框架。而且这些框架都是数据驱动业务的框架（mvvm），都不愿意去引入jquery去怼dom。就算是有类似于vue-strap等等利用本身框架属性写成的bs，也不会使用毕竟element-ui、iview、ant-design等等都非常棒</p>
+</div><div class="tags"><a href="/tags/test/">test</a></div><div class="post-nav"><a class="next" href="/2018/04/23/hello-world/">Hello World</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Kategorien</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/test/" style="font-size: 15px;">test</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Letzte</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/23/test/">test</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/23/hello-world/">Hello World</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Xxxz's blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
